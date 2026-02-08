@@ -1,0 +1,19 @@
+config settings 'settings'
+	# Enable Tailscale service on boot
+	option enabled '0'
+	# Base URL of login (control) server
+	#option login_server ''
+	# Pre-authentication key
+	#option authkey ''
+	# Accept DNS configuration from the control server
+	option accept_dns '1'
+	# Accept subnet routes that other nodes advertise
+	option accept_routes '0'
+	# Offer to be an exit node for outbound internet traffic
+	option advertise_exit_node '0'
+	# Use this machine as an exit node
+	#option exit_node ''
+	# Subnets to advertise to other Tailscale nodes
+	#list advertise_routes ''
+	# Extra flags in format --flag=value
+	#list flags ''

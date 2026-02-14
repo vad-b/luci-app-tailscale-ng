@@ -14,9 +14,7 @@
 'require ui';
 'require view';
 
-// =============================================================================
-// RPC Declarations
-// =============================================================================
+// RPC
 
 const callServiceList = rpc.declare({
 	object: 'service',
@@ -32,9 +30,7 @@ const callInitAction = rpc.declare({
 	expect: { result: false }
 });
 
-// =============================================================================
-// Helper Functions
-// =============================================================================
+// Helpers
 
 // Cached service list result to avoid duplicate calls
 let cachedServiceList = null;
@@ -53,7 +49,7 @@ async function getInterfaceSubnets() {
 	try {
 		await uci.load('network');
 		const subnets = [];
-		
+
 		uci.sections('network', 'interface', function(section) {
 			const name = section['.name'];
 			if (name === 'lan' || name === 'wan') {
@@ -68,7 +64,7 @@ async function getInterfaceSubnets() {
 				}
 			}
 		});
-		
+
 		return [...new Set(subnets)];
 	} catch (e) {
 		return [];
@@ -90,10 +86,10 @@ async function getTailscaleInfo(isRunning) {
 			return info;
 
 		const tailscaleRes = await fs.exec('/usr/sbin/tailscale', ['status', '--json']);
-		
+
 		if (tailscaleRes.code === 0 && tailscaleRes.stdout) {
 			const status = JSON.parse(tailscaleRes.stdout.replace(/("\w+"):\s*(\d+)/g, '$1:"$2"'));
-			
+
 			info.backendState = status.BackendState;
 			info.authURL = status.AuthURL;
 
@@ -152,7 +148,7 @@ async function getStatusData() {
 		data.tailscaleNetcheck = getCommandOutput(netcheckRes);
 		data.tailscaleDnsStatus = getCommandOutput(dnsStatusRes);
 	} catch (e) {
-		console.error('Error loading status data:', e);
+		data.tailscaleStatus = _('Error: unable to load status data.');
 	}
 
 	return data;
@@ -211,9 +207,7 @@ function updateExitNodeOptions(info) {
 		select.value = '';
 }
 
-// =============================================================================
-// SVG Icon Helpers
-// =============================================================================
+// Icons
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -293,9 +287,7 @@ function renderServiceStatusContent(isRunning, info) {
 	return E('span', {}, nodes);
 }
 
-// =============================================================================
-// Custom Form Option Classes
-// =============================================================================
+// Custom form options
 
 const ServiceStatusValue = form.DummyValue.extend({
 	__name__: 'ServiceStatusValue',
@@ -348,7 +340,7 @@ const LoginStatusValue = form.DummyValue.extend({
 
 	renderWidget: function() {
 		const info = this.tsInfo || {};
-		return E('div', { 'id': 'ts-login-status', 'style': 'line-height: 30px;' }, 
+		return E('div', { 'id': 'ts-login-status', 'style': 'line-height: 30px;' },
 			renderLoginStatusContent(info));
 	}
 });
@@ -470,9 +462,7 @@ const DynamicLogoutButton = form.Button.extend({
 	}
 });
 
-// =============================================================================
-// Main View
-// =============================================================================
+// Main view
 
 return view.extend({
 	load: function() {
@@ -498,21 +488,14 @@ return view.extend({
 
 		let m, s, o;
 
-		// =====================================================================
-		// Map: luci-app-tailscale-ng config (our extended settings)
-		// Chain tailscale config for options that use o.uciconfig='tailscale'
-		// =====================================================================
+		// Config map (luci-app-tailscale-ng + chained tailscale)
 		m = new form.Map('luci-app-tailscale-ng', _('Tailscale NG'),
 			_('Tailscale is a cross-platform and easy to use virtual LAN.'));
 
-		// Chain the original tailscale config - this is CRITICAL for:
-		// 1. Options with o.uciconfig='tailscale' to load/save correctly
-		// 2. Both configs to be saved together on Save button click
+		// Chain original tailscale config so o.uciconfig='tailscale' options load/save correctly.
 		m.chain('tailscale');
 
-		// =====================================================================
-		// Service Control Section
-		// =====================================================================
+		// Service
 		s = m.section(form.NamedSection, 'settings', 'settings');
 		s.anonymous = true;
 		s.addremove = false;
@@ -531,9 +514,7 @@ return view.extend({
 			return E('div', { 'style': 'line-height: 30px;' }, tsVersion || _('N/A'));
 		};
 
-		// =====================================================================
-		// Main Section with Tabs
-		// =====================================================================
+		// Tabs
 		s = m.section(form.NamedSection, 'settings', 'settings');
 		s.anonymous = true;
 		s.addremove = false;
@@ -542,9 +523,7 @@ return view.extend({
 		s.tab('settings', _('Settings'));
 		s.tab('status', _('Status'));
 
-		// =====================================================================
-		// TAB: Authentication - Authentication Section
-		// =====================================================================
+		// Authentication tab
 		o = s.taboption('auth', SectionTitle, '_auth_title');
 		o.title = _('Authentication');
 
@@ -562,9 +541,7 @@ return view.extend({
 		o.placeholder = 'tskey-auth-...';
 		o.rmempty = true;
 
-		// =====================================================================
-		// TAB: Authentication - Logout and Clean Section (dynamic visibility)
-		// =====================================================================
+		// Logout (dynamic visibility)
 		o = s.taboption('auth', DynamicLogoutTitle, '_logout_title');
 		o.title = _('Logout and Clean');
 		o.tsInfo = tsInfo;
@@ -578,9 +555,7 @@ return view.extend({
 			return handleLogoutAndClean();
 		};
 
-		// =====================================================================
-		// TAB: Settings - General Section
-		// =====================================================================
+		// Settings tab: General
 		o = s.taboption('settings', SectionTitle, '_general_title');
 		o.title = _('General');
 
@@ -605,9 +580,7 @@ return view.extend({
 		o.default = 'nftables';
 		o.rmempty = false;
 
-		// =====================================================================
-		// TAB: Settings - DNS Section
-		// =====================================================================
+		// Settings tab: DNS
 		o = s.taboption('settings', SectionTitle, '_dns_title');
 		o.title = _('DNS');
 
@@ -616,9 +589,7 @@ return view.extend({
 		o.default = '1';
 		o.rmempty = false;
 
-		// =====================================================================
-		// TAB: Settings - Routing Section
-		// =====================================================================
+		// Settings tab: Routing
 		o = s.taboption('settings', SectionTitle, '_routing_title');
 		o.title = _('Routing');
 
@@ -654,9 +625,7 @@ return view.extend({
 		o.depends('advertise_exit_node', '0');
 		o.rmempty = true;
 
-		// =====================================================================
-		// TAB: Settings - Logging Section
-		// =====================================================================
+		// Settings tab: Logging
 		o = s.taboption('settings', SectionTitle, '_logging_title');
 		o.title = _('Logging');
 
@@ -672,9 +641,7 @@ return view.extend({
 		o.default = '1';
 		o.rmempty = false;
 
-		// =====================================================================
-		// TAB: Settings - Extra Section
-		// =====================================================================
+		// Settings tab: Extra
 		o = s.taboption('settings', SectionTitle, '_extra_title');
 		o.title = _('Extra');
 
@@ -685,9 +652,7 @@ return view.extend({
 		);
 		o.rmempty = true;
 
-		// =====================================================================
-		// TAB: Status (lazy loaded when tab is opened)
-		// =====================================================================
+		// Status tab (lazy loaded)
 		o = s.taboption('status', StatusOutputValue, '_status_main');
 		o.sectionTitle = _('Tailscale Status');
 		o.statusId = 'tailscale_status';
@@ -718,14 +683,12 @@ return view.extend({
 		o.command = '/usr/sbin/tailscale dns status';
 		o.content = null;
 
-		// =====================================================================
-		// Lazy loading for Status tab + Polling
-		// =====================================================================
+		// Status tab: lazy loading + polling
 		let statusDataLoaded = false;
-		
+
 		async function loadStatusData() {
 			if (statusDataLoaded) return;
-			
+
 			const newData = await getStatusData();
 			const sections = [
 				{ id: 'tailscale_status', data: newData.tailscaleStatus },
@@ -744,7 +707,7 @@ return view.extend({
 						: _('No output available. Service may not be running.');
 				}
 			});
-			
+
 			statusDataLoaded = true;
 		}
 
@@ -753,14 +716,14 @@ return view.extend({
 			const running = await getServiceStatus();
 			const info = await getTailscaleInfo(running);
 			latestTsInfo = info;
-			
+
 			// Update service status display
 			const statusEl = document.getElementById('ts-service-status');
 			if (statusEl) {
 				while (statusEl.firstChild) statusEl.removeChild(statusEl.firstChild);
 				statusEl.appendChild(renderServiceStatusContent(running, info));
 			}
-			
+
 			// Update login status
 			const loginEl = document.getElementById('ts-login-status');
 			if (loginEl) {
@@ -770,7 +733,7 @@ return view.extend({
 
 			updateExitNodeOptions(info);
 			updateLogoutSection(info);
-			
+
 			// If status tab is active (has class cbi-tab, not cbi-tab-disabled), refresh its data
 			const statusTabActive = document.querySelector('li.cbi-tab[data-tab="status"]');
 			if (statusTabActive) {
@@ -784,7 +747,7 @@ return view.extend({
 			loadStatusData();
 			updateExitNodeOptions(tsInfo);
 			updateLogoutSection(tsInfo);
-			
+
 			// If login status shows "Checking status...", update it more aggressively
 			// This handles the case when service just started
 			if (tsInfo.backendState !== 'Running' && isRunning) {
@@ -826,7 +789,7 @@ return view.extend({
 				};
 				setTimeout(quickUpdateLogin, 2000);
 			}
-			
+
 			// Add click listener for Status tab to trigger load if not yet loaded
 			const statusTabLink = mapNode.querySelector('.cbi-tabmenu li:last-child a, .cbi-tabmenu li[data-tab="status"] a');
 			if (statusTabLink) {
@@ -834,7 +797,7 @@ return view.extend({
 					setTimeout(loadStatusData, 100); // Will return immediately if already loaded
 				});
 			}
-			
+
 			// Also try via tab container click
 			mapNode.addEventListener('click', function(ev) {
 				const tabItem = ev.target.closest('.cbi-tabmenu li');
@@ -847,7 +810,7 @@ return view.extend({
 					}, 100);
 				}
 			});
-			
+
 			return mapNode;
 		});
 	}

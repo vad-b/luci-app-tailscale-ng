@@ -19,12 +19,37 @@ service_triggers() {
 }
 
 start_service() {
-	logger -t "luci-app-tailscale-ng" "Triggered: start_service"
+	logger -t "luci-app-tailscale-ng" "start_service"
 
 	local enabled enabled_status ts_service_status
 	local login_server authkey
 	local accept_dns accept_routes advertise_exit_node
-	local exit_node advertise_routes flags
+	local exit_node
+	local routes_csv
+
+	routes_csv=""
+
+	append_route_csv() {
+		local v="$1"
+		[ -n "$v" ] || return 0
+		case "$v" in
+			*[[:space:]]*) logger -t "luci-app-tailscale-ng" "ignoring invalid advertised route (must not contain spaces): [$v]"; return 0 ;;
+		esac
+		append routes_csv "$v" ","
+	}
+
+	append_extra_flag() {
+		local v="$1"
+		[ -n "$v" ] || return 0
+		case "$v" in
+			--*) ;;
+			*) logger -t "luci-app-tailscale-ng" "ignoring invalid extra flag (must start with --): [$v]"; return 0 ;;
+		esac
+		case "$v" in
+			*[[:space:]]*) logger -t "luci-app-tailscale-ng" "ignoring invalid extra flag (must not contain spaces): [$v]"; return 0 ;;
+		esac
+		procd_append_param command "$v"
+	}
 
 	config_load "luci-app-tailscale-ng"
 	config_get_bool enabled "settings" "enabled" 0
@@ -32,18 +57,18 @@ start_service() {
 
 	# Handle enabled/disabled state
 	[ "$enabled" -eq 1 ] && enabled_status="true" || enabled_status="false"
-	logger -t "luci-app-tailscale-ng" "Tailscale service enabled: [$enabled_status]"
+	logger -t "luci-app-tailscale-ng" "tailscale service enabled: [$enabled_status]"
 	if [ "$enabled" -eq 0 ]; then
-		logger -t "luci-app-tailscale-ng" "Tailscale service disabled, stopping tailscale"
+		logger -t "luci-app-tailscale-ng" "tailscale service disabled, stopping tailscale"
 		/etc/init.d/tailscale stop
 		return 0
 	fi
 
 	# Start/reload tailscale service if status is not "running"
 	ts_service_status="$(/sbin/service tailscale status)"
-	logger -t "luci-app-tailscale-ng" "Tailscale service status: [$ts_service_status]"
+	logger -t "luci-app-tailscale-ng" "tailscale service status: [$ts_service_status]"
 	if [ "$ts_service_status" != "running" ]; then
-		logger -t "luci-app-tailscale-ng" "Tailscale service is not running, reloading tailscale"
+		logger -t "luci-app-tailscale-ng" "tailscale service is not running, reloading tailscale"
 		/etc/init.d/tailscale reload
 	fi
 
@@ -54,43 +79,38 @@ start_service() {
 	config_get_bool accept_routes "settings" "accept_routes" 0
 	config_get_bool advertise_exit_node "settings" "advertise_exit_node" 0
 	config_get exit_node "settings" "exit_node" ""
-	config_get advertise_routes "settings" "advertise_routes" ""
-	config_get flags "settings" "flags" ""
+
+	config_list_foreach "settings" "advertise_routes" append_route_csv
 
 	#
 	# Build and execute tailscale up via procd-managed instance
 	#
-	local routes_csv
-	set -- /usr/sbin/tailscale up --reset
-
-	[ -n "$login_server" ] && set -- "$@" "--login-server=$login_server"
-	[ -n "$authkey" ] && set -- "$@" "--authkey=$authkey"
-	[ "$accept_dns" = "0" ] && set -- "$@" "--accept-dns=false"
-	[ "$accept_routes" = "1" ] && set -- "$@" "--accept-routes=true"
-	[ "$advertise_exit_node" = "1" ] && set -- "$@" "--advertise-exit-node"
-
-	[ -n "$exit_node" ] && {
-		set -- "$@" "--exit-node=$exit_node"
-		set -- "$@" "--exit-node-allow-lan-access=true"
-	}
-
-	[ -n "$advertise_routes" ] && {
-		routes_csv=$(echo "$advertise_routes" | tr ' ' ',')
-		set -- "$@" "--advertise-routes=$routes_csv"
-	}
-
-	[ -n "$flags" ] && set -- "$@" $flags
-
-	logger -t "luci-app-tailscale-ng" "Executing: $*"
 	procd_open_instance up
-	procd_set_param command "$@"
 	procd_set_param stdout 1
 	procd_set_param stderr 1
+	procd_set_param command /usr/sbin/tailscale up --reset
+
+	[ -n "$login_server" ] && procd_append_param command "--login-server=$login_server"
+	[ -n "$authkey" ] && procd_append_param command "--authkey=$authkey"
+	[ "$accept_dns" = "0" ] && procd_append_param command "--accept-dns=false"
+	[ "$accept_routes" = "1" ] && procd_append_param command "--accept-routes=true"
+	[ "$advertise_exit_node" = "1" ] && procd_append_param command "--advertise-exit-node"
+
+	[ -n "$exit_node" ] && {
+		procd_append_param command "--exit-node=$exit_node"
+		procd_append_param command "--exit-node-allow-lan-access=true"
+	}
+
+	[ -n "$routes_csv" ] && procd_append_param command "--advertise-routes=$routes_csv"
+
+	config_list_foreach "settings" "flags" append_extra_flag
+
+	logger -t "luci-app-tailscale-ng" "applying configuration via tailscale up"
 	procd_close_instance
 	return 0
 }
 
 stop_service() {
-	logger -t "luci-app-tailscale-ng" "Stopping tailscale"
+	logger -t "luci-app-tailscale-ng" "stopping tailscale"
 	/etc/init.d/tailscale stop
 }

@@ -5,8 +5,7 @@
 			"file": {
 				"/sys/class/net/tailscale0/*": [ "read" ],
 				"/sbin/ip": [ "exec" ],
-				"/usr/sbin/tailscale": [ "exec" ],
-				"/sbin/logread": [ "exec" ]
+				"/usr/sbin/tailscale": [ "exec" ]
 			},
 			"ubus": {
 				"luci": [ "getInitList", "setInitAction" ],

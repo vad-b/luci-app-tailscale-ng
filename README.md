@@ -1,8 +1,20 @@
 # luci-app-tailscale-ng
 
-LuCI web interface for managing [Tailscale](https://tailscale.com/) on OpenWRT routers.
+LuCI web interface for managing [Tailscale](https://tailscale.com/) on OpenWrt routers.
 
-Inspired by [asvow/luci-app-tailscale](https://github.com/asvow/luci-app-tailscale), this project is a ground-up redesign that eliminates conflicts with the standard OpenWRT `tailscale` package.
+Inspired by [asvow/luci-app-tailscale](https://github.com/asvow/luci-app-tailscale), this project is a major redesign that eliminates conflicts with the standard OpenWrt `tailscale` package. See [Motivation](#motivation) for details.
+
+## Quick Install
+
+Auto-detects `opkg` / `apk` and installs the latest release:
+
+```shell
+wget -qO- https://raw.githubusercontent.com/vad-b/luci-app-tailscale-ng/main/install.sh | sh
+```
+
+After installation, navigate to **VPN -> Tailscale NG** in the LuCI web interface.
+
+Need manual package install options instead? See [Manual Installation](#manual-installation).
 
 ## Screenshots
 
@@ -21,17 +33,22 @@ Inspired by [asvow/luci-app-tailscale](https://github.com/asvow/luci-app-tailsca
 
 ## Motivation
 
-The goals of `luci-app-tailscale-ng` are:
+### Problem
 
-- keep integration non-conflicting with the standard OpenWRT `tailscale` package
-- make the OpenWRT Tailscale UI closer to the Tailscale management UI in pfSense and OPNsense
+The original [asvow/luci-app-tailscale](https://github.com/asvow/luci-app-tailscale) project is excellent and inspired this work, but its integration model is tightly coupled to core files from the OpenWrt `tailscale` package, which leads to three operational drawbacks:
 
-The original [asvow/luci-app-tailscale](https://github.com/asvow/luci-app-tailscale) project is excellent and inspired this work, but its integration model is tightly coupled to core files from the OpenWRT `tailscale` package, which leads to two operational drawbacks:
-
-- **Invasive Installation** - installation overwrites original `/etc/init.d/tailscale` and `/etc/config/tailscale` files.
-- **Breaking Uninstallation** - uninstall removes these required files; restoring normal Tailscale operation requires manual file recreation or reinstalling the `tailscale` package.
+- **Invasive install:** During installation, `asvow/luci-app-tailscale` replaces core `tailscale` files (`/etc/init.d/tailscale` and `/etc/config/tailscale`) and takes ownership of them.
+- **Breaking uninstallation:** When `asvow/luci-app-tailscale` is removed, those same files are deleted, leaving the stock `tailscale` package non-functional.
+- **Restore normal operation:** To recover normal Tailscale operation, you must recreate the removed files manually or reinstall the `tailscale` package.
 
 See [asvow/luci-app-tailscale#31](https://github.com/asvow/luci-app-tailscale/issues/31) for details.
+
+### Solution
+
+The goals of `luci-app-tailscale-ng` are:
+
+- keep integration non-conflicting with the standard OpenWrt `tailscale` package
+- make the OpenWrt Tailscale UI closer to the Tailscale management UI in pfSense and OPNsense
 
 ## How it works
 
@@ -57,9 +74,7 @@ This means you can install and remove the package at any time without breaking y
 - Live status dashboard (tailscale status, IP, interface, netcheck, DNS)
 - Automatic settings reapply on network interface changes via hotplug
 
-## Current limitations
-
-This package focuses on managing `tailscale up` command-line parameters. It does **not** automatically create network interfaces or firewall rules for Tailscale traffic - you may need to configure these manually if your setup requires it.
+> **Right now** this package provides Tailscale management in LuCI (service control, `tailscale up` settings, and status visibility). It does **not** automatically create Tailscale interfaces or firewall rules yet. See [Roadmap](#roadmap) for planned automation.
 
 ## Roadmap
 
@@ -68,15 +83,9 @@ This package focuses on managing `tailscale up` command-line parameters. It does
 - Backup and restore of the Tailscale state file
 - Update Tailscale directly from the web UI (both standard and size-optimized builds for memory-constrained devices)
 
-## Installation
+## Manual Installation
 
-### Quick install (auto-detects `opkg` / `apk`)
-
-```shell
-wget -qO- https://raw.githubusercontent.com/vad-b/luci-app-tailscale-ng/main/install.sh | sh
-```
-
-### Manual install (`opkg` / `.ipk`)
+### Install with `opkg` (`.ipk`)
 
 Download the latest `.ipk` package from [Releases](https://github.com/vad-b/luci-app-tailscale-ng/releases), upload it to the router's `/tmp` directory, then:
 
@@ -84,15 +93,13 @@ Download the latest `.ipk` package from [Releases](https://github.com/vad-b/luci
 opkg install /tmp/luci-app-tailscale-ng_*.ipk
 ```
 
-### Manual install (`apk` / `.apk`)
+### Install with `apk` (`.apk`)
 
 Download the latest `.apk` package from [Releases](https://github.com/vad-b/luci-app-tailscale-ng/releases), upload it to the router's `/tmp` directory, then:
 
 ```shell
 apk add --allow-untrusted --upgrade /tmp/luci-app-tailscale-ng_*.apk
 ```
-
-After installation, navigate to **VPN -> Tailscale NG** in the LuCI web interface.
 
 ## Credits
 

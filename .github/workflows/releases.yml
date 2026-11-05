@@ -1,156 +1,97 @@
-name: "Build Packages"
+name: Build Packages
 
 on:
   repository_dispatch:
-  workflow_dispatch: {}
+  workflow_dispatch:
   push:
-    branches:
-      - "main"
+    branches: [main]
     paths:
-      - "Makefile"
+      - Makefile
+      - po/**
+      - htdocs/**
+      - root/**
+      - scripts/**
+      - .github/workflows/releases.yml
+  pull_request:
+    paths:
+      - Makefile
+      - po/**
+      - htdocs/**
+      - root/**
+      - scripts/**
+      - .github/workflows/releases.yml
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   TZ: Europe/Madrid
 
 jobs:
-  job_check:
-    name: Check Version
-    runs-on: ubuntu-latest
+  version:
+    runs-on: ubuntu-24.04
     outputs:
-      version: ${{ steps.check_version.outputs.latest_version }}
-      has_update: ${{ steps.check_version.outputs.has_update }}
+      tag: ${{ steps.version.outputs.tag }}
+      has_update: ${{ steps.version.outputs.has_update }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: "main"
-
-      - name: Check version
-        id: check_version
+          persist-credentials: false
+      - name: Check release version
+        id: version
         env:
-          url_release: https://api.github.com/repos/${{ github.repository }}/releases/latest
+          GH_TOKEN: ${{ github.token }}
         run: |
-          latest_version=$(grep -oP 'PKG_VERSION:=\K.*' Makefile | sed 's/^/v/')
-          latest_release=$(wget -qO- -t1 -T2 ${{ env.url_release }} | awk -F '"' '/tag_name/{print $4}')
-          has_update=$([ "${latest_version}" != "${latest_release}" ] && echo true || echo false)
-          echo "latest_version=${latest_version}" >> "$GITHUB_OUTPUT"
-          echo "has_update=${has_update}" >> "$GITHUB_OUTPUT"
-          echo "latest_version: ${latest_version}"
-          echo "latest_release: ${latest_release}"
-          echo "has_update: ${has_update}"
+          tag="v$(sed -n 's/^PKG_VERSION:=//p' Makefile)"
+          latest=$(gh api "repos/${{ github.repository }}/releases/latest" --jq .tag_name)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "has_update=$([ "$tag" != "$latest" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
-      - name: Generate new tag & release
-        if: steps.check_version.outputs.has_update == 'true'
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          name: luci-app-tailscale-ng
-          tag_name: ${{ steps.check_version.outputs.latest_version }}
-
-  job_build:
-    name: Build ${{ matrix.package_ext }} package
-    needs: job_check
-    if: needs.job_check.outputs.has_update == 'true'
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - package_ext: ipk
-            sdk_cache_key: openwrt-sdk-24.10-x86-64
-            sdk_url: https://archive.openwrt.org/releases/24.10.4/targets/x86/64/openwrt-sdk-24.10.4-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst
-            feeds_base_branch: openwrt-24.10
-            feeds_packages_branch: openwrt-24.10
-            feeds_luci_branch: openwrt-24.10
-            feeds_routing_branch: openwrt-24.10
-            extra_config: CONFIG_LUCI_LANG_zh_Hans=n
-          - package_ext: apk
-            sdk_cache_key: openwrt-sdk-snapshot-x86-64
-            sdk_url: https://downloads.openwrt.org/snapshots/targets/x86/64/openwrt-sdk-x86-64_gcc-14.3.0_musl.Linux-x86_64.tar.zst
-            feeds_base_branch: main
-            feeds_packages_branch: master
-            feeds_luci_branch: master
-            feeds_routing_branch: master
-            extra_config: CONFIG_USE_APK=y
+        format: [ipk, apk]
     steps:
-      - name: Install packages
-        run: |
-          sudo -E apt-get -qq update
-          sudo -E apt-get -qq install build-essential clang flex bison g++ gawk gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev rsync unzip zlib1g-dev file wget
-          sudo -E apt-get -qq autoremove --purge
-          sudo -E apt-get -qq clean
-
-      - name: Cache OpenWrt SDK
-        id: cache-sdk
-        uses: actions/cache@v3
+      - uses: actions/checkout@v4
         with:
-          path: sdk
-          key: ${{ matrix.sdk_cache_key }}
-
-      - name: Initialize SDK
-        if: steps.cache-sdk.outputs.cache-hit != 'true'
+          persist-credentials: false
+      - name: Install SDK prerequisites
         run: |
-          wget "${{ matrix.sdk_url }}"
-          file_name=$(echo "${{ matrix.sdk_url }}" | awk -F/ '{print $NF}')
-          mkdir sdk
-          tar -xf "${file_name}" -C ./sdk --strip-components=1
-          cd sdk
-          {
-            echo "src-git base https://github.com/openwrt/openwrt.git;${{ matrix.feeds_base_branch }}"
-            echo "src-git-full packages https://github.com/openwrt/packages.git;${{ matrix.feeds_packages_branch }}"
-            echo "src-git-full luci https://git.openwrt.org/project/luci.git;${{ matrix.feeds_luci_branch }}"
-            echo "src-git-full routing https://git.openwrt.org/feed/routing.git;${{ matrix.feeds_routing_branch }}"
-          } > feeds.conf
-          git clone -b main "https://github.com/${{ github.repository }}.git" package/downloads/luci-app-tailscale-ng
-          ./scripts/feeds update -a
-          echo "CONFIG_PACKAGE_luci-app-tailscale-ng=m" > .config
-          ./scripts/feeds install -d n luci-app-tailscale-ng
-          make download -j"$(nproc)"
-
-      - name: Configure build
-        run: |
-          cd sdk
-          rm -rf package/downloads/luci-app-tailscale-ng
-          git clone "https://github.com/${{ github.repository }}.git" package/downloads/luci-app-tailscale-ng
-          cd package/downloads/luci-app-tailscale-ng
-          git checkout "${{ github.sha }}"
-          cd ../../..
-          ./scripts/feeds install luci-app-tailscale-ng
-          {
-            echo "CONFIG_ALL_NONSHARED=n"
-            echo "CONFIG_ALL_KMODS=n"
-            echo "CONFIG_ALL=n"
-            echo "CONFIG_AUTOREMOVE=n"
-            echo "${{ matrix.extra_config }}"
-            echo "CONFIG_PACKAGE_luci-app-tailscale-ng=m"
-          } > .config
-          make defconfig
-
-      - name: Compile package
-        id: compile
-        run: |
-          cd sdk
-          make package/luci-app-tailscale-ng/{clean,compile} -j"$(nproc)"
-          mkdir -p ../release-artifacts
-          find bin/packages -type f -name "luci-app-tailscale-ng*.${{ matrix.package_ext }}" -exec cp {} ../release-artifacts/ \;
-          if ! ls ../release-artifacts/*.${{ matrix.package_ext }} >/dev/null 2>&1; then
-            echo "No .${{ matrix.package_ext }} package was produced"
-            exit 1
-          fi
-          cd ..
-          echo "status=success" >> "$GITHUB_OUTPUT"
-          echo "FIRMWARE=$PWD" >> "$GITHUB_ENV"
-
-      - name: Upload package to release
-        if: steps.compile.outputs.status == 'success'
-        uses: softprops/action-gh-release@v1
+          sudo apt-get update
+          sudo apt-get install -y build-essential flex bison gawk gcc-multilib g++-multilib gettext libncurses-dev libssl-dev python3-setuptools rsync unzip zlib1g-dev file wget curl zstd
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/luci-app-tailscale-ng
+          key: openwrt-sdk-${{ matrix.format }}-${{ hashFiles('scripts/build-packages.sh') }}
+      - name: Build application and translation
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JOBS: '2'
+        run: bash scripts/build-packages.sh "${{ matrix.format }}"
+      - uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ needs.job_check.outputs.version }}
-          files: ${{ env.FIRMWARE }}/release-artifacts/*.${{ matrix.package_ext }}
+          name: packages-${{ matrix.format }}
+          path: artifacts/${{ matrix.format }}/
+          if-no-files-found: error
+
+  release:
+    needs: [version, build]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.version.outputs.has_update == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: packages-*
+          path: release-artifacts
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: luci-app-tailscale-ng ${{ needs.version.outputs.tag }}
+          files: |
+            release-artifacts/**/*.ipk
+            release-artifacts/**/*.apk
+          fail_on_unmatched_files: true

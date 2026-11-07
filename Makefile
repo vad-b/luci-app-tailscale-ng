@@ -11,6 +11,10 @@ LUCI_PKGARCH:=all
 
 PKG_VERSION:=0.1.1
 
+# match the i18n pkg version to the main pkg version
+PKG_RELEASE:=1
+PKG_PO_VERSION:=$(PKG_VERSION)-r$(PKG_RELEASE)
+
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature

@@ -1,103 +1,126 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:199
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:618
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:240
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:720
 msgid "-- None --"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:587
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:689
 msgid "Accept DNS"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:588
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:690
 msgid "Accept DNS configuration from the control server."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:601
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:703
 msgid "Accept Subnet Routes"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:602
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:704
 msgid "Accept subnet routes that other nodes advertise."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:648
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:750
 msgid "Additional Flags"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:596
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:698
 msgid "Advertise Exit Node"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:606
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:708
 msgid "Advertised Routes"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:164
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:205
 msgid "Are you sure you want to log out and clean the local state?"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:522
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:528
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:624
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:630
 msgid "Authentication"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:534
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:636
 msgid "Base URL of login (control) server."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:283
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:324
 msgid "Checking login..."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:368
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:409
 msgid "Checking status..."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:355
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:396
 msgid "Click here to log in"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:131
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:561
+msgid "Close"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:172
 msgid "Command exited with code"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:585
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:540
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:541
+msgid "Copied"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:519
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:520
+msgid "Copy command"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:540
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:541
+msgid "Copy manually"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:545
+msgid "Current version"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:687
 msgid "DNS"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:552
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:654
 msgid ""
 "Disconnect from login server, expire current login, and flush local state "
 "cache."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:173
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:214
 msgid "Error:"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:151
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:192
 msgid "Error: unable to load status data."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:616
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:718
 msgid "Exit Node"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:646
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:748
 msgid "Extra"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:650
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:752
 msgid "Extra flags in format --flag=value. See %s for available options."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:575
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:677
 msgid "Firewall Mode"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:560
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:662
 msgid "General"
 msgstr ""
 
@@ -105,209 +128,229 @@ msgstr ""
 msgid "Grant access to Tailscale NG configuration"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:562
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:664
 msgid "Listen Port"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:387
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:428
 msgid "Loading..."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:279
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:320
 msgid "Logged in"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:281
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:322
 msgid "Logged out"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:630
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:732
 msgid "Logging"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:167
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:208
 msgid "Logging out and cleaning state..."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:634
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:736
 msgid "Logging program activities."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:640
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:742
 msgid "Logging program errors and exceptions."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:533
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:635
 msgid "Login Server"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:530
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:632
 msgid "Login Status"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:549
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:651
 msgid "Logout"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:546
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:550
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:648
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:652
 msgid "Logout and Clean"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:363
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:404
 msgid "Manage in Admin Console"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:514
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:616
 msgid "N/A"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:391
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:707
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:547
+msgid "New version"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:432
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:809
 msgid "No output available. Service may not be running."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:270
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:311
 msgid "Not running"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:597
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:699
 msgid "Offer to be an exit node for outbound internet traffic."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:571
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:673
 msgid "Path to state file. WARNING: Changing this requires reauthentication."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:538
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:640
 msgid "Pre-authentication Key"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:313
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:552
+msgid "Release notes"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:354
 msgid "Restart"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:315
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:356
 msgid "Restarting Tailscale service..."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:594
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:696
 msgid "Routing"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:273
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:314
 msgid "Running"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:617
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:719
 msgid "Select an online machine to use as an exit node."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:577
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:679
 msgid "Select the firewall backend to use."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:366
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:407
 msgid "Service not running"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:539
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:641
 msgid "Set the machine authorization key."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:523
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:625
 msgid "Settings"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:326
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:367
 msgid "Start"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:504
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:606
 msgid "Start Tailscale service on boot."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:328
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:369
 msgid "Starting Tailscale service..."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:569
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:671
 msgid "State File"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:524
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:626
 msgid "Status"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:638
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:740
 msgid "StdErr Logging"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:632
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:734
 msgid "StdOut Logging"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:319
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:360
 msgid "Stop"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:321
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:362
 msgid "Stopping Tailscale service..."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:607
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:709
 msgid ""
 "Subnets to advertise to other Tailscale nodes, e.g. <code>192.168.1.0/24</"
 "code>."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:681
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:783
 msgid "Tailscale DNS Status"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:503
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:605
 msgid "Tailscale Enabled"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:663
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:765
 msgid "Tailscale IP"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:669
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:771
 msgid "Tailscale Interface"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:492
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:594
 #: root/usr/share/luci/menu.d/luci-app-tailscale-ng.json:3
 msgid "Tailscale NG"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:675
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:777
 msgid "Tailscale Netcheck"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:508
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:657
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:610
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:759
 msgid "Tailscale Status"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:512
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:614
 msgid "Tailscale Version"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:651
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:753
 msgid "Tailscale documentation"
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:493
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:595
 msgid "Tailscale is a cross-platform and easy to use virtual LAN."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:564
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:554
+msgid "To update, run this command as root in an SSH session on your router:"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:666
 msgid "UDP port to listen on for WireGuard and peer-to-peer traffic."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/tailscale-ng/index.js:540
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:544
+msgid "Update available"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:879
+msgid "Update available: %s"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/tailscale-ng/index.js:642
 msgid ""
 "Use a non-reusable auth key and disable key expiry for trusted machines via "
 "the provider admin console."

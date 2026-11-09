@@ -36,6 +36,47 @@ const callInitAction = rpc.declare({
 let cachedServiceList = null;
 let latestTsInfo = null;
 
+const APP_VERSION = '@APP_VERSION@';
+
+function isNewerAppVersion(candidate, current) {
+	const pattern = /^v?(\d+)\.(\d+)\.(\d+)$/;
+	const candidateParts = pattern.exec(candidate);
+	const currentParts = pattern.exec(current);
+	if (!candidateParts || !currentParts)
+		return false;
+
+	for (let i = 1; i <= 3; i++) {
+		const next = Number(candidateParts[i]);
+		const previous = Number(currentParts[i]);
+		if (next !== previous)
+			return next > previous;
+	}
+	return false;
+}
+
+async function getAvailableAppUpdate() {
+	const controller = new AbortController();
+	const timeout = setTimeout(function() { controller.abort(); }, 10000);
+	try {
+		const response = await fetch('https://api.github.com/repos/vad-b/luci-app-tailscale-ng/releases/latest', {
+			'credentials': 'omit',
+			'referrerPolicy': 'no-referrer',
+			'signal': controller.signal
+		});
+		if (!response.ok)
+			throw new Error('GitHub HTTP ' + response.status);
+		const release = await response.json();
+		if (release.draft || release.prerelease || !isNewerAppVersion(release.tag_name, APP_VERSION))
+			return null;
+		return {
+			version: release.tag_name.replace(/^v/, ''),
+			url: 'https://github.com/vad-b/luci-app-tailscale-ng/releases/tag/' + encodeURIComponent(release.tag_name)
+		};
+	} finally {
+		clearTimeout(timeout);
+	}
+}
+
 async function getServiceStatus() {
 	try {
 		cachedServiceList = await callServiceList('tailscale');
@@ -462,6 +503,67 @@ const DynamicLogoutButton = form.Button.extend({
 	}
 });
 
+function showAppUpdate(update) {
+	const installCommand = 'wget -qO- https://raw.githubusercontent.com/vad-b/luci-app-tailscale-ng/main/install.sh | sh';
+	const commandBlock = E('pre', {
+		'style': 'white-space:pre-wrap;overflow-wrap:anywhere;box-sizing:border-box;margin:0;padding:12px 48px 12px 12px'
+	}, [installCommand]);
+	const copyIcon = createIcon([
+		svgEl('rect', { 'x': '9', 'y': '9', 'width': '13', 'height': '13', 'rx': '2' }),
+		svgEl('path', { 'd': 'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' })
+	]);
+	copyIcon.setAttribute('aria-hidden', 'true');
+	const copyButton = E('button', {
+		'type': 'button',
+		'class': 'btn',
+		'title': _('Copy command'),
+		'aria-label': _('Copy command'),
+		'style': 'position:absolute;top:6px;right:6px;width:28px;height:28px;padding:4px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center',
+		'click': async function(ev) {
+			const button = ev.currentTarget;
+			let copied = false;
+			try {
+				await navigator.clipboard.writeText(installCommand);
+				copied = true;
+			} catch (e) {}
+			if (!copied) {
+				const selection = window.getSelection();
+				const range = document.createRange();
+				range.selectNodeContents(commandBlock);
+				selection.removeAllRanges();
+				selection.addRange(range);
+				try {
+					copied = document.execCommand('copy');
+				} catch (e) {}
+			}
+			button.textContent = copied ? '✓' : '!';
+			button.setAttribute('title', copied ? _('Copied') : _('Copy manually'));
+			button.setAttribute('aria-label', copied ? _('Copied') : _('Copy manually'));
+		}
+	}, [copyIcon]);
+	const modal = ui.showModal(_('Update available'), [
+		E('p', {}, [_('Current version'), ': ', E('strong', {}, ['v' + APP_VERSION])]),
+		E('p', {}, [
+			_('New version'), ': ', E('strong', {}, ['v' + update.version]), ' · ',
+			E('a', {
+				'href': update.url,
+				'target': '_blank',
+				'rel': 'noopener'
+			}, [_('Release notes'), ' ↗'])
+		]),
+		E('p', {}, [_('To update, run this command as root in an SSH session on your router:')]),
+		E('div', { 'style': 'position:relative;margin-bottom:1em' }, [commandBlock, copyButton]),
+		E('div', { 'class': 'right' }, [
+			E('button', {
+				'type': 'button',
+				'class': 'btn',
+				'click': ui.hideModal
+			}, _('Close'))
+		])
+	]);
+	modal.style.maxWidth = '560px';
+}
+
 // Main view
 
 return view.extend({
@@ -743,6 +845,43 @@ return view.extend({
 		}, 15);
 
 		return m.render().then(function(mapNode) {
+			const heading = mapNode.querySelector('h2');
+			if (heading) {
+				const githubIcon = svgEl('svg', {
+					'width': '14',
+					'height': '14',
+					'viewBox': '0 0 16 16',
+					'fill': 'currentColor',
+					'aria-hidden': 'true',
+					'style': 'vertical-align:-0.125em;margin-right:0.3em'
+				}, [svgEl('path', {
+					'd': 'M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656'
+				})]);
+				const metadata = E('span', {
+					'style': 'display:inline-block;margin-left:16px;font-size:13px;font-weight:400;line-height:18px;white-space:nowrap'
+				}, [
+					'v' + APP_VERSION + ' · ',
+					E('a', {
+						'href': 'https://github.com/vad-b/luci-app-tailscale-ng',
+						'target': '_blank',
+						'rel': 'noopener'
+					}, [githubIcon, 'GitHub'])
+				]);
+				heading.appendChild(metadata);
+				getAvailableAppUpdate().then(function(update) {
+					if (!update)
+						return;
+					metadata.appendChild(document.createTextNode(' · '));
+					metadata.appendChild(E('button', {
+						'type': 'button',
+						'style': 'display:inline-block;padding:1px 7px;border:1px solid #fcd34d;border-radius:4px;background:#fef3c7;color:#713f12;font-family:inherit;font-size:12px;font-weight:400;line-height:18px;vertical-align:baseline;cursor:pointer',
+						'click': function() { showAppUpdate(update); }
+					}, [_('Update available: %s').format('v' + update.version)]));
+				}).catch(function(error) {
+					console.warn('Unable to check for application updates:', error);
+				});
+			}
+
 			// Start loading status data immediately in background (fire and forget)
 			loadStatusData();
 			updateExitNodeOptions(tsInfo);

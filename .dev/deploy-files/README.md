@@ -21,7 +21,7 @@ Deploy the mapped files:
 bash .dev/deploy-files/deploy-files.sh
 ```
 
-The default `deploy` mode validates the mapping and router requirements, copies files, applies and verifies permissions, then runs the application's UCI defaults and restarts `rpcd`. Existing application configuration is preserved. Dependencies are not installed.
+The default `deploy` mode validates the mapping and router requirements, copies files, applies and verifies permissions, then substitutes the application version, runs the application's UCI defaults and restarts `rpcd`. Existing application configuration is preserved. Dependencies are not installed.
 
 Add `--interactive` in your own terminal if router access needs password-based key installation. The option is passed to Router SSH; ordinary runs never prompt for passwords.
 

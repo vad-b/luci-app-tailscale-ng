@@ -98,12 +98,16 @@ opkg install /tmp/luci-app-tailscale-ng_*.ipk
 Download the latest `.apk` package from [Releases](https://github.com/vad-b/luci-app-tailscale-ng/releases), upload it to the router's `/tmp` directory, then:
 
 ```shell
-apk add --allow-untrusted --upgrade /tmp/luci-app-tailscale-ng_*.apk
+apk add --allow-untrusted --upgrade /tmp/luci-app-tailscale-ng-*.apk
 ```
 
 Simplified Chinese translation is also available as a separate `luci-i18n-tailscale-ng-zh-cn` package in both `.apk` and `.ipk` formats in [Releases](https://github.com/vad-b/luci-app-tailscale-ng/releases).
 
-For local development builds and testing, see [Local package builds](docs/local-build.md).
+## Development Tooling
+
+- [Router SSH Tooling](.dev/router-ssh/README.md) — Configure router access, run commands, transfer files, and work in an open SSH session.
+- [Deploy Files](.dev/deploy-files/README.md) — Push working-tree files to the router for testing without building a package.
+- [Build Packages](.dev/build-packages/README.md) — Build `.apk` and `.ipk` packages locally using the same script as CI.
 
 ## Credits
 

@@ -1,4 +1,7 @@
-.deploy/target.env
-.deploy/.ssh/
-.private
-/artifacts/
+# Development tooling
+/.dev/build-packages/artifacts/
+/.dev/**/target.env
+/.dev/**/.ssh/
+
+# Local files
+/.private

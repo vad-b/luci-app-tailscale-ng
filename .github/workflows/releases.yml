@@ -10,7 +10,7 @@ on:
       - po/**
       - htdocs/**
       - root/**
-      - scripts/**
+      - .dev/build-packages/**
       - .github/workflows/releases.yml
   pull_request:
     paths:
@@ -18,7 +18,7 @@ on:
       - po/**
       - htdocs/**
       - root/**
-      - scripts/**
+      - .dev/build-packages/**
       - .github/workflows/releases.yml
 
 permissions:
@@ -34,7 +34,7 @@ jobs:
       tag: ${{ steps.version.outputs.tag }}
       has_update: ${{ steps.version.outputs.has_update }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Check release version
@@ -54,25 +54,26 @@ jobs:
       matrix:
         format: [ipk, apk]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Install SDK prerequisites
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential flex bison gawk gcc-multilib g++-multilib gettext libncurses-dev libssl-dev python3-setuptools rsync unzip zlib1g-dev file wget curl zstd
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/luci-app-tailscale-ng
-          key: openwrt-sdk-${{ matrix.format }}-${{ hashFiles('scripts/build-packages.sh') }}
+          key: openwrt-sdk-${{ matrix.format }}-${{ hashFiles('.dev/build-packages/build-packages.sh') }}
       - name: Build application and translation
         env:
           JOBS: '2'
-        run: bash scripts/build-packages.sh "${{ matrix.format }}"
-      - uses: actions/upload-artifact@v4
+        run: bash .dev/build-packages/build-packages.sh "${{ matrix.format }}"
+      - uses: actions/upload-artifact@v7
         with:
           name: packages-${{ matrix.format }}
-          path: artifacts/${{ matrix.format }}/
+          path: .dev/build-packages/artifacts/${{ matrix.format }}/
+          include-hidden-files: true
           if-no-files-found: error
 
   release:
@@ -82,16 +83,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: packages-*
-          path: release-artifacts
-      - uses: softprops/action-gh-release@v2
+          path: .dev/build-packages/artifacts
+      - uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.version.outputs.tag }}
           target_commitish: ${{ github.sha }}
-          name: luci-app-tailscale-ng ${{ needs.version.outputs.tag }}
+          name: ${{ needs.version.outputs.tag }}
           files: |
-            release-artifacts/**/*.ipk
-            release-artifacts/**/*.apk
+            .dev/build-packages/artifacts/**/*.ipk
+            .dev/build-packages/artifacts/**/*.apk
           fail_on_unmatched_files: true

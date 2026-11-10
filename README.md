@@ -67,6 +67,7 @@ This means you can install and remove the package at any time without breaking y
 - Configure listen port, state file path, firewall mode
 - Login status with one-click authentication link
 - Configure control server URL and pre-authentication keys
+- Download and restore the Tailscale authentication state file
 - Accept DNS / Accept subnet routes
 - Advertise as exit node or select a remote exit node (with auto-detection of exit nodes)
 - Advertise local subnets (with auto-detection of LAN/WAN networks)
@@ -80,8 +81,7 @@ This means you can install and remove the package at any time without breaking y
 
 - Auto-create network interfaces and firewall zones/rules for Tailscale
 - Import existing Tailscale settings on first install (read current running parameters and populate the config)
-- Backup and restore of the Tailscale state file
-- Update Tailscale directly from the web UI (both standard and size-optimized builds for memory-constrained devices)
+- Update Tailscale service directly from the web UI (both standard and size-optimized builds for memory-constrained devices)
 
 ## Manual Installation
 
@@ -108,6 +108,7 @@ Simplified Chinese translation is also available as a separate `luci-i18n-tailsc
 - [Router SSH Tooling](.dev/router-ssh/README.md) — Configure router access, run commands, transfer files, and work in an open SSH session.
 - [Deploy Files](.dev/deploy-files/README.md) — Push working-tree files to the router for testing without building a package.
 - [Build Packages](.dev/build-packages/README.md) — Build `.apk` and `.ipk` packages locally using the same script as CI.
+- [Capture Screenshots](.dev/capture-screenshots/README.md) — Capture LuCI pages with a consistent width and synthetic data.
 
 ## Credits
 
